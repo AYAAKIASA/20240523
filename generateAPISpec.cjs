@@ -1,0 +1,42 @@
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+const apiSpec = {
+  openapi: '3.0.0',
+  info: {
+    title: 'My API',
+    version: '1.0.0',
+    description: 'API documentation for my Express.js application',
+  },
+  paths: {
+    '/users': {
+      get: {
+        summary: 'Get all users',
+        responses: {
+          '200': {
+            description: 'Successful operation',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'integer' },
+                      name: { type: 'string' },
+                      email: { type: 'string', format: 'email' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const yamlString = yaml.dump(apiSpec);
+
+fs.writeFileSync('api.yaml', yamlString, 'utf8');

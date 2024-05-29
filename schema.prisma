@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// User table
+model User {
+  user_id         Int           @id @default(autoincrement())
+  username        String
+  email           String        @unique
+  password        String
+  role            String        // 'employer' or 'candidate'
+  name            String        
+  postedJobs      Job[]
+  applications    Application[]
+}
+
+// Job table
+model Job {
+  job_id          Int           @id @default(autoincrement())
+  title           String
+  description     String
+  salary          Float
+  location        String
+  company_id      Int           // Foreign key to Company model
+  company         Company       @relation("CompanyJobs", fields: [company_id], references: [company_id])
+  postedBy        Int           // Foreign key to User model
+  postedByUser    User          @relation(fields: [postedBy], references: [user_id])
+  applications    Application[]
+}
+
+// Company table
+model Company {
+  company_id  Int      @id @default(autoincrement())
+  name        String
+  industry    String
+  size        String
+  jobs        Job[]    @relation("CompanyJobs")
+}
+
+// Application table
+model Application {
+  application_id  Int           @id @default(autoincrement())
+  job_id          Int           // Foreign key to Job model
+  job             Job           @relation(fields: [job_id], references: [job_id])
+  candidate_id    Int           // Foreign key to User model
+  candidateUser   User          @relation(fields: [candidate_id], references: [user_id])
+  status          String        // 'pending', 'accepted', or 'rejected'
+}
